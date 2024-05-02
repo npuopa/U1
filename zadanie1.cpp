@@ -1,46 +1,43 @@
 #include <iostream>
-#include <vector>
-#include <string>
 #include <fstream>
 #include <sstream>
-#include <unordered_map>
+#include <vector>
+#include <map>
 #include <algorithm>
 #include <limits>
 
 using namespace std;
 
-bool comp(const pair<string, vector<string>>& a, const pair<string, vector<string>>& b) {
+bool comp(const pair<string, vector<string> >& a, const pair<string, vector<string> >& b) {
     return a.second.size() > b.second.size();
 }
 
 int main()
 {
-    int p = 0, s = 0;
-    vector<string> pro;
-    vector<pair<string, vector<float>>> cont;
+    ifstream in("U1.txt");
+    int p, s;
+    in >> p >> s;
 
     string line;
-    ifstream in("U1.txt");
-
     getline(in, line);
+    getline(in, line);
+    vector<string> pro;
     istringstream iss(line);
-    iss >> p >> s;
-
-    getline(in, line);
-    iss = istringstream(line);
     string pros;
     while (getline(iss, pros, ' ')) {
         pro.push_back(pros);
     }
 
+    vector<pair<string, vector<float> > > cont;
     while (getline(in, line)) {
-        iss = istringstream(line);
+        iss.clear();
+        iss.str(line);
         string name;
         iss >> name;
-        pair<string, vector<float>> temp;
+        pair<string, vector<float> > temp;
         temp.first = name;
         float price;
-        while(iss >> price){
+        while (iss >> price) {
             temp.second.push_back(price);
         }
         cont.push_back(temp);
@@ -48,7 +45,7 @@ int main()
 
     in.close();
 
-    unordered_map<string, vector<string>> umap;
+    map<string, vector<string> > map;
     float res = 0;
     for (int i = 0; i < p; ++i) {
         float min_p = numeric_limits<float>::max();
@@ -58,7 +55,7 @@ int main()
         res += min_p;
         for (int j = 0; j < cont.size(); ++j) {
             if (cont[j].second[i] == min_p) {
-                umap[cont[j].first].push_back(pro[i]);
+                map[cont[j].first].push_back(pro[i]);
             }
         }
     }
@@ -67,12 +64,13 @@ int main()
     out.open("U1rez.txt");
     out << res << endl;
     if (res <= s) {
-        vector<pair<string, vector<string>>> out_vec(umap.begin(), umap.end());
+        vector<pair<string, vector<string> > > out_vec(map.begin(), map.end());
         sort(out_vec.begin(), out_vec.end(), comp);
-        for (pair<string, vector<string>> p : out_vec) {
-            out << p.first << " ";
-            for (string ss : p.second) {
-                out << ss << " ";
+        vector<pair<string, vector<string> > >::iterator it;
+        for (it = out_vec.begin(); it != out_vec.end(); ++it) {
+            out << it->first << " ";
+            for (int i = 0; i < it->second.size(); ++i) {
+                out << it->second[i] << " ";
             }
             out << endl;
         }
